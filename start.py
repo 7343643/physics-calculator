@@ -6,7 +6,7 @@
 #version 1.4
 
 global debug
-debug = True
+debug = False
 #this runs the tester when called
 def First_run():
     import tester
