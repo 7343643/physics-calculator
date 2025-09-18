@@ -1,13 +1,28 @@
-#version 1.5.1
-#this makes the debug variable global and sets it to false (if this is not a release version then it is true)
+#error list
+#error 1 = tester detected 1 or more issues 
+#error 2 = tester output missing but calc_cache is present
+#error 3 = calc_cache was not made or was unable  to be found(likely an issue with the tester)
+
+#version 1.4.1
+
 global debug
-debug = False
+debug = True
 #this runs the tester when called
-#this defines error as an exception
-class error(Exception):
-    pass
 def First_run():
     import tester
+def ignore(code):
+    if debug != True:
+        raise(error(code))
+    else:
+        ask = input("a non-fatal error has occured, enter y if you wish to continue\n" \
+        "an invalid input will result in the program crashing with the error that occured\n"
+        "WARNING CONTINUING MAY RESULT IN CRASHES AND IS NOT RECOMMENDED")
+        if ask == "y":
+            print("continuing")
+            pass
+        else:
+            raise(error(code))
+
 #this function is used to test for issues
 def run_test():
     #attempts to open the calc_cache file and if it is unable to it calls the first run function
@@ -16,7 +31,9 @@ def run_test():
         f.close()
     except:
         First_run()
-    
+    #this defines error as an exception
+    class error(Exception):
+        pass
     #attempts to open calc_cache and read the first line which should say if there where any issues
     #if there were issues it raises an error and tells the user to check the calc_cache file 
     #if the file is able to be opened but the doesn't have the the expected words on the first line (or it has none) it raises an error
@@ -30,11 +47,14 @@ def run_test():
             if stat == "unable to fufile all dependecies":
                 print("an issue was detected the may cause the program to no work" \
                 "please look at the calc_cache file and fix what is wrong")
-                raise(error("ERROR"))
+                ignore("ERROR 1")
+                raise(error("ERROR 1"))
             else:
-                raise(error("ERROR"))
+                ignore("ERROR 2")
+                raise(error("ERROR 2"))
     except:
-        raise(error("ERROR"))
+        ignore("ERROR 3")
+        raise(error("ERROR 3"))
     try:
         j = open("settings.json")
         j.close()

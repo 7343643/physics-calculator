@@ -1,7 +1,7 @@
 #version 1.5.1
 #this makes the debug variable global and sets it to false (if this is not a release version then it is true)
 global debug
-debug = False
+debug = True
 #this runs the tester when called
 #this defines error as an exception
 class error(Exception):

@@ -2,13 +2,17 @@
 
 #imports the module i use for gui
 from tkinter import *
+
+from tkinter import ttk
 from calculator import *
 import webbrowser
 #defines calculator as a class, this class contains all the info for the gui
-class calculator():
+class calculator:
     
     #this runs the contained code when the class is called
-    def __init__(self):
+    def __init__(self,root):
+        root.title("Physics Calculator")
+        
         #this sets all the runner variable to global
         global setting_run
         global hist_run
@@ -38,6 +42,7 @@ class calculator():
             help_info_run = True
             root.destroy()
         #this proccesses the input the user put in the box and returns an awnser when called
+        
         def calc():
             quest = question.get()
             process(quest)
@@ -51,55 +56,56 @@ class calculator():
             error = "the awnser is "+str(result)
             self.calc_error.config(text=error)
             question.set("")
-
-        #remanants from trialing (not gonna risk removing them and breaking something)
-        self.calc_frame = Frame(padx=10, pady=10)
-        self.calc_frame.grid(sticky="nswe")
-        self.calc_frame.columnconfigure(0,weight=1)
-        self.calc_frame.rowconfigure(0,weight=1)
-            
-        #this is what makes the settings button
-        self.settings_button = Button(self.calc_frame,
-                                      text="settings", bg="#808080",
-                                      fg="#FFFFFF", font=("Arial", "12", "bold"),
-                                      width=10, command=set_button)
-        self.settings_button.grid(sticky="nw")
-        #this adds the text physics calculator to the window of the program
-        self.calc_heading = Label(self.calc_frame,
-                                   text="Physics Calculator",
-                                   font=("Arial", "16", "bold")
-                                   )
-
-        self.calc_heading.grid(padx=150,row=0, column=0,sticky="new")
-
-        #this is what will be displayed on the window after the tiltle
+        
+        
+        
+        
+        content = ttk.Frame(root)
+        
+        content.grid(column=0, row=0, sticky=(N,S,E,W))
+        #content.pack(expand=1,fill=BOTH)
+        
         instructions = ("please enter the equation you want solved in the box below "
         "then press calculate, if you need help understanding the program "
         "or are unsure how to format the equations press the help/info button")
-
-        self.calc_instructions = Label(self.calc_frame,
-                                       text=instructions,
-                                       wraplength=250, width=40,
-                                       justify="left")
-        self.calc_instructions.grid(row=1)
         
-
+        self.settings_button = ttk.Button(content,
+                                      text="settings", command=set_button,
+                                      )
+        
+        self.settings_button.grid(column=0,row=0,sticky="W")
+        
+        #self.settings_button.pack(expand=1,anchor=NW)
+        #this adds the text physics calculator to the window of the program
+        self.calc_heading = ttk.Label(content,
+                                   text="Physics Calculator",
+                                   font=("Arial",16,"bold"))
+       
+        self.calc_heading.grid(padx=150,row=0, column=1,sticky=(N))
+        #self.calc_heading.pack(expand=1)
+        #this is what will be displayed on the window after the tiltle
+        
+        self.calc_instructions = ttk.Label(content,
+                                       text=instructions,wraplength=250,
+                                       justify="left",anchor=CENTER)
+        self.calc_instructions.grid(row=1,column=1, sticky=(N,S,E,W))
+        #self.calc_instructions.pack(expand=1)
+        
         #this makes the box where the user will input the equation they want solved
-        self.calc_entry = Entry(self.calc_frame, font=("Arial", "14"),
+        self.calc_entry = ttk.Entry(content, font=("Arial", "14"),
                                 textvariable=question
                                 )
-        self.calc_entry.grid (row=2, padx=10, pady=10)
-        
+        self.calc_entry.grid (row=2,column=1, padx=10, pady=10)
+        #self.calc_entry.pack(expand=1)
         #this is the error/ awnser text and what displays it
         error = "please enter an equation"
-        self.calc_error = Label(self.calc_frame, text=error,
-                                fg="#9c0000")
-        self.calc_error.grid(row=3)
-
+        self.calc_error = ttk.Label(content, text=error)
+        self.calc_error.grid(row=3,column=1)
+        #self.calc_error.pack(expand=1)
         #this is for all the buttons on the page except the settings button
-        self.button_frame = Frame(self.calc_frame)
-        self.button_frame.grid(row=4)
-
+        self.button_frame = ttk.Frame(content)
+        self.button_frame.grid(row=4,column=1)
+        #self.button_frame.pack(expand=1)
         #button list (button text | bg color | command | row | column) this is basically the infomation for the buttons
         button_details_list = [
             ["calculate", "#009900", calc, 0, 0],
@@ -112,26 +118,32 @@ class calculator():
         self.button_ref_list = []
 
         for item in button_details_list:
-            self.make_button = Button(self.button_frame,
-                                      text=item[0], bg=item[1],
-                                      fg="#FFFFFF", font=("Arial", "12", "bold"),
+            self.make_button = ttk.Button(self.button_frame,
+                                      text=item[0],
                                       width=20, command=item[2],                                                                     
                                       )
             self.make_button.grid(row=item[3], column=item[4], padx=5, pady=5)
         
             self.button_ref_list.append(self.make_button)
         
-        #this retrieves the history / export button and disables it at startup if not valid calculations have been made
+        #this retrieves the history / export button and disables it at startup
         from calculator import works
         if works != True:
-            self.to_history_button = self.button_ref_list[3].config(state=DISABLED)
-     
+          self.to_history_button = self.button_ref_list[3].config(state=DISABLED)
+        root.columnconfigure(0,weight=1)
+        root.rowconfigure(0,weight=1)
+        content.columnconfigure(0,weight=1)
+        content.columnconfigure(1,weight=1)
+        content.columnconfigure(2,weight=1)
+        content.rowconfigure(0,weight=1)
+        content.rowconfigure(1,weight=1)
+        content.rowconfigure(2,weight=1)
+        
+        content.rowconfigure(4,weight=1)
 #this what runs the gui
-def run(test):
-    global debug
-    debug = test
-    global root
-    root = Tk()
-    root.title("Physics Calculator")
-    calculator()
-    root.mainloop()
+
+root = Tk()
+    
+    
+calculator(root)
+root.mainloop()
